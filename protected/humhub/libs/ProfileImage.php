@@ -90,9 +90,41 @@ class ProfileImage
     {
         $path = "@web/";
         if (file_exists($this->getPath($prefix))) {
-            $path .= 'uploads/' . $this->folder_images . '/';
+            // $path .= 'uploads/' . $this->folder_images . '/';
+            // $path .= $this->guid . $prefix;
+            // $path .= '.jpg?m=' . filemtime($this->getPath($prefix));
+
+            $lavel1 = $this->guid[0] . $this->guid[1] . $this->guid[2];
+            $lavel2 = $this->guid[3] . $this->guid[4] . $this->guid[5];
+            //$path .= '/uploads/' . $this->folder_images . '/';
+            $path .= 'uploads/' . $this->folder_images . '/' . $lavel1 . '/' . $lavel2 . '/';
+
+            //Директория для хранения аватарки
+            $uploaddir = '@webroot/uploads/' . $this->folder_images . '/' . $lavel1;
+            $uploaddir = Yii::getAlias($uploaddir);
+            //Директория для хранения аватарки
+            if (!is_dir($uploaddir)) {
+                if (!@mkdir($uploaddir, 0777) && !is_dir($uploaddir)) {
+                    throw new \Exception('Не возможно создать папку для загрузки');
+                };
+                @chmod($uploaddir, 0777);
+            }
+            //Директория для хранения аватарки
+            $uploaddir = '@webroot/uploads/' . $this->folder_images . '/' . $lavel1 . '/' . $lavel2;
+            $uploaddir = Yii::getAlias($uploaddir);
+            //Директория для хранения аватарки
+            if (!is_dir($uploaddir)) {
+                if (!@mkdir($uploaddir, 0777) && !is_dir($uploaddir)) {
+                    throw new \Exception('Не возможно создать папку для загрузки');
+                };
+                @chmod($uploaddir, 0777);
+            }
+
+
             $path .= $this->guid . $prefix;
             $path .= '.jpg?m=' . filemtime($this->getPath($prefix));
+
+
         } else {
             $path .= 'img/' . $this->defaultImage;
             $path .= '.jpg';
@@ -122,14 +154,39 @@ class ProfileImage
     {
         $path = Yii::getAlias('@webroot/uploads/' . $this->folder_images . '/');
 
-        if (!is_dir($path))
-            mkdir($path);
+        if (!is_dir($path)) {
+            if (!@mkdir($path, 0777) && !is_dir($path)) {
+                throw new \Exception('Не возможно создать папку для загрузки');
+            };
+        }
 
-        $path .= $this->guid;
+        $lavel1 = $this->guid[0] . $this->guid[1] . $this->guid[2];
+        $lavel2 = $this->guid[3] . $this->guid[4] . $this->guid[5];
+        //Директория для хранения аватарки
+        $uploaddir = $path . '/' . $lavel1;
+        //Директория для хранения аватарки
+        if (!is_dir($uploaddir)) {
+            if (!@mkdir($uploaddir, 0777) && !is_dir($uploaddir)) {
+                throw new \Exception('Не возможно создать папку для загрузки');
+            };
+            @chmod($uploaddir, 0777);
+        }
+        //Директория для хранения аватарки
+        $uploaddir = $path . '/' . $lavel1 . '/' . $lavel2;
+        //Директория для хранения аватарки
+        if (!is_dir($uploaddir)) {
+            if (!@mkdir($uploaddir, 0777) && !is_dir($uploaddir)) {
+                throw new \Exception('Не возможно создать папку для загрузки');
+            };
+            @chmod($uploaddir, 0777);
+        }
+
+        $path .= '/' . $lavel1 . '/' . $lavel2 . '/' . $this->guid;
         $path .= $prefix;
         $path .= ".jpg";
 
         return $path;
+
     }
 
     /**
