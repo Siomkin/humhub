@@ -39,7 +39,11 @@ class UrlRule extends Object implements UrlRuleInterface
                     $route = "";
                 }
 
-                $url = "u/" . urlencode(strtolower($user->username)) . "/" . $route;
+                if ($route == 'mfiles/file/index') {
+                    $route = 'files';
+                }
+
+                $url = urlencode(strtolower($user->username)) . "/" . $route;
                 if (!empty($params) && ($query = http_build_query($params)) !== '') {
                     $url .= '?' . $query;
                 }
@@ -55,21 +59,28 @@ class UrlRule extends Object implements UrlRuleInterface
     public function parseRequest($manager, $request)
     {
         $pathInfo = $request->getPathInfo();
-        if (substr($pathInfo, 0, 2) == "u/") {
-            $parts = explode('/', $pathInfo, 3);
-            if (isset($parts[1])) {
-                $user = User::find()->where(['username' => $parts[1]])->one();
-                if ($user !== null) {
-                    if (!isset($parts[2]) || $parts[2] == "") {
-                        $parts[2] = $this->defaultRoute;
-                    }
-                    $params = $request->get();
-                    $params['uguid'] = $user->guid;
+        // $pathInfo = str_ireplace('.html','' ,$pathInfo );
+        //  if (substr($pathInfo, 0, 2) == "u/") {
+        $parts = explode('/', $pathInfo, 2);
+        //  var_dump($parts);exit();
+        if (isset($parts[0])) {
+            $user = User::find()->where(['username' => $parts[0]])->one();
 
-                    return [$parts[2], $params];
+            if ($user !== null) {
+                $params = $request->get();
+                $params['uguid'] = $user->guid;
+
+                if (!isset($parts[1]) || $parts[1] == "") {
+                    $parts[1] = $this->defaultRoute;
+                } elseif ($parts[1] == 'files' || $parts[1] == 'files/') {
+
+                    return ['mfiles/file/index', $params];
                 }
+
+                return [$parts[1], $params];
             }
         }
+        //  }
         return false;
     }
 
