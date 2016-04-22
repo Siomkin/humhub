@@ -22,6 +22,15 @@ use humhub\widgets\GridView;
                 'name',
                 'description',
                 [
+                    'attribute' => 'members',
+                    'label' => Yii::t('AdminModule.views_group_index', 'Members'),
+                    'format' => 'raw',
+                    'options' => ['style' => 'text-align:center;'],
+                    'value' => function ($data) {
+                        return $data->getUsers()->count();
+                    }
+                ],
+                [
                     'header' => Yii::t('AdminModule.views_group_index', 'Actions'),
                     'class' => 'yii\grid\ActionColumn',
                     'options' => ['width' => '80px'],
