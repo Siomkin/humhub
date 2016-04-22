@@ -46,8 +46,7 @@ class Group extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['managerGuids', 'name'], 'required', 'on' => self::SCENARIO_EDIT],
-            ['managerGuids', 'atleasOneAdminCheck', 'on' => self::SCENARIO_EDIT],
+            [['name'], 'required', 'on' => self::SCENARIO_EDIT],
             [['space_id', 'created_by', 'updated_by'], 'integer'],
             [['description', 'managerGuids', 'defaultSpaceGuid'], 'string'],
             [['created_at', 'updated_at'], 'safe'],
@@ -71,6 +70,7 @@ class Group extends \yii\db\ActiveRecord
             'id' => 'ID',
             'space_id' => 'Space ID',
             'name' => 'Name',
+            'defaultSpaceGuid' => 'Default Space',
             'managerGuids' => 'Manager',
             'description' => 'Description',
             'created_at' => 'Created At',
@@ -78,11 +78,6 @@ class Group extends \yii\db\ActiveRecord
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By'
         ];
-    }
-
-    public function atleasOneAdminCheck()
-    {
-        return !$this->show_at_registration || count(explode(",", $this->managerGuids) > 0);
     }
 
     public function beforeSave($insert)
@@ -225,16 +220,25 @@ class Group extends \yii\db\ActiveRecord
     {
         return $this->getUsers()->count() > 0;
     }
+    
+    public function isManager($user) {
+        $userId = ($user instanceof User) ? $user->id : $user;
+        return $this->getGroupUsers()->where(['user_id' => $userId , 'is_group_manager' => true])->count() > 0;
+    }
+    
+    public function isMember($user) {
+        return $this->getGroupUser($user) != null;
+    }
 
     /**
      * Adds a user to the group. This function will skip if the user is already
      * a member of the group.
-     * @param User $user
+     * @param User $user user id or user model
      * @param type $isManager
      */
     public function addUser($user, $isManager = false)
     {
-        if($this->getGroupUser($user) != null) {
+        if($this->isMember($user)) {
             return;
         }
         
@@ -247,6 +251,18 @@ class Group extends \yii\db\ActiveRecord
         $newGroupUser->created_by = Yii::$app->user->id;
         $newGroupUser->is_group_manager = $isManager;
         $newGroupUser->save();
+    }
+    
+    /**
+     * Removes a user from the group.
+     * @param type $user userId or user model
+     */
+    public function removeUser($user)
+    {
+        $groupUser = $this->getGroupUser($user);
+        if($groupUser != null) {
+            $groupUser->delete();
+        }
     }
 
     public function getSpace()
