@@ -23,7 +23,11 @@
         "cebe/markdown": "1.0.2",
         "yiisoft/yii2-jui": "^2.0",
         "zendframework/zend-http": "*",
+<<<<<<< HEAD
         "zendframework/zend-filter": "*",
+=======
+        "jbroadway/urlify": "^1.0",
+>>>>>>> e7b91e3c83730c2ceb191736db615c6177bb01f1
         "nqxcode/zendsearch": "^2.0",
         "xj/yii2-jplayer-widget": "*",
         "zendframework/zend-ldap": "^2.5",

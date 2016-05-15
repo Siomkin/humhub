@@ -2,7 +2,7 @@
 
 /**
  * @link https://www.humhub.org/
- * @copyright Copyright (c) 2015 HumHub GmbH & Co. KG
+ * @copyright Copyright (c) 2016 HumHub GmbH & Co. KG
  * @license https://www.humhub.com/licences
  */
 
@@ -33,10 +33,12 @@ class Application extends \yii\console\Application
         $this->trigger(self::EVENT_ON_INIT);
 
         if ($this->isDatabaseInstalled()) {
-            $baseUrl = Setting::get('baseUrl');
-            Yii::setAlias(("@web"), $baseUrl);
-            $this->urlManager->scriptUrl = $baseUrl;
-            $this->urlManager->baseUrl = $baseUrl;
+            $baseUrl = Yii::$app->settings->get('baseUrl');
+            if ($baseUrl !== null) {
+                Yii::setAlias(("@web"), $baseUrl);
+                $this->urlManager->scriptUrl = $baseUrl;
+                $this->urlManager->baseUrl = $baseUrl;
+            }
         }
     }
 
@@ -56,7 +58,7 @@ class Application extends \yii\console\Application
 
     /**
      * Checks if database is installed
-     * 
+     *
      * @return boolean is database installed/migrated
      */
     public function isDatabaseInstalled()
@@ -64,7 +66,7 @@ class Application extends \yii\console\Application
         if (in_array('setting', Yii::$app->db->schema->getTableNames())) {
             return true;
         }
-            
+
         return false;
     }
 

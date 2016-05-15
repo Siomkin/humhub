@@ -34,6 +34,20 @@ class Module extends \yii\base\Module
     public $resourcesPath = 'assets';
 
     /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+
+        // Set settings component
+        $this->set('settings', [
+            'class' => SettingsManager::className(),
+            'moduleId' => $this->id
+        ]);
+    }
+
+    /**
      * Returns modules name provided by module.json file
      *
      * @return string Name
@@ -82,7 +96,7 @@ class Module extends \yii\base\Module
 
     /**
      * Returns image url for this module
-     * Place your modules image in assets/module_image.png
+     * Place your modules image in <resourcesPath>/module_image.png
      *
      * @return String Image Url
      */
@@ -91,7 +105,8 @@ class Module extends \yii\base\Module
         $moduleImageFile = $this->getBasePath() . '/' . $this->resourcesPath . '/module_image.png';
 
         if (is_file($moduleImageFile)) {
-            return $this->getAssetsUrl() . '/module_image.png';
+            list($path, $url) = Yii::$app->assetManager->publish($moduleImageFile);
+            return $url;
         }
 
         return Yii::getAlias("@web/img/default_module.jpg");
@@ -251,7 +266,7 @@ class Module extends \yii\base\Module
     {
         return [];
     }
-    
+
     /**
      * Returns a list of notification classes this module provides.
      * 

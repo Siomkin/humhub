@@ -27,12 +27,17 @@ $config = [
                 [
                     'class' => 'yii\log\DbTarget',
                     'levels' => ['error', 'warning'],
+                    'except' => ['yii\web\HttpException:404'],
                     'logVars' => ['_GET', '_SERVER'],
                 ],
             ],
         ],
         'search' => array(
             'class' => 'humhub\modules\search\engine\ZendLuceneSearch',
+        ),
+        'settings' => array(
+            'class' => 'humhub\components\SettingsManager',
+            'moduleId' => 'base',
         ),
         'i18n' => [
             'class' => 'humhub\components\i18n\I18N',

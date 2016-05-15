@@ -10,7 +10,6 @@ namespace humhub\modules\search\engine;
 
 use Yii;
 use humhub\modules\search\interfaces\Searchable;
-use humhub\modules\content\models\Content;
 use humhub\modules\content\components\ContentActiveRecord;
 use humhub\modules\search\libs\SearchResult;
 use humhub\modules\search\libs\SearchResultSet;
@@ -44,6 +43,10 @@ class ZendLuceneSearch extends Search
 
         // Add provided search infos
         foreach ($attributes as $key => $val) {
+            if (is_array($val)) {
+                $val = implode(" ", $val);
+            }
+
             $doc->addField(\ZendSearch\Lucene\Document\Field::Text($key, $val, 'UTF-8'));
         }
 
